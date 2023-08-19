@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Plan extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'user_id',
+        'recipe_id',
+        'date',
+    ];
 }

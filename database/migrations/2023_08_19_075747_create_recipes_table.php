@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('cuisine_id');
             $table->string('title');
             $table->string('description');
+            $table->text('directions');
             $table->timestamps();
         });
     }

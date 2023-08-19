@@ -12,5 +12,6 @@ class Recipe extends Model
         'cuisine_id',
         'title',
         'description',
+        'directions',
     ];
 }
