@@ -88,5 +88,48 @@ class RecipesController extends Controller
             return response()->json($recipes);
         }
     }
-    
+    public function likeRecipe(Request $request, $recipeId)
+    {
+        $user = Auth::user();
+        $recipe = Recipe::findOrFail($recipeId);
+
+        $existingLike = Like::where('user_id', $user->id)
+            ->where('recipe_id', $recipe->id)
+            ->first();
+
+        if ($existingLike) {
+            $existingLike->delete();
+            return response()->json(['message' => 'Like removed']);
+        }
+
+        $like = new Like();
+        $like->user_id = $user->id;
+        $like->recipe_id = $recipe->id;
+        $like->save();
+
+        return response()->json(['message' => 'Recipe liked']);
+    }
+
+    public function addComment(Request $request, $recipeId)
+    {
+        $user = Auth::user();
+        $recipe = Recipe::findOrFail($recipeId);
+
+        $this->validate($request, [
+            'text' => 'required|string',
+        ]);
+
+        $comment = new Comment();
+        $comment->user_id = $user->id;
+        $comment->recipe_id = $recipe->id;
+        $comment->text = $request->input('text');
+        $comment->save();
+
+        $commentWithUser = Comment::with('user')->find($comment->id);
+
+        return response()->json([
+            'message' => 'Comment added',
+            'comment' => $commentWithUser,
+        ]);
+    }
 }
