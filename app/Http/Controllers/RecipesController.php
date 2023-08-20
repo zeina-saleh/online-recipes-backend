@@ -19,10 +19,14 @@ class RecipesController extends Controller
 
     function getRecipe($recipeId = null)
     {
+        $user = Auth::user();
+        $user_id = $user->id;
 
         if ($recipeId) {
             $recipe = Recipe::with(['comments.user', 'likes.user', 'images', 'cuisine', 'ingredients.unit'])
                 ->find($recipeId);
+
+            $is_liked = $recipe->likes->pluck('user_id')->contains($user_id);
 
             $getRecipe = [
                 "id" => $recipe->id,
@@ -60,7 +64,8 @@ class RecipesController extends Controller
                         "unit" => $ingredient->unit->name,
                         "unit_id" => $ingredient->pivot->unit_id,
                     ];
-                })
+                }),
+                "is_liked" => $is_liked,
             ];
 
             return response()->json($getRecipe);
