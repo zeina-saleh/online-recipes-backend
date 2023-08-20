@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Recipe;
 use App\Models\Comment;
 use App\Models\Like;
@@ -11,6 +12,7 @@ use App\Models\Cuisine;
 use App\Models\Ingredient;
 use App\Models\Unit;
 use App\Models\IngredientRecipe;
+use GuzzleHttp\Promise\Create;
 
 class RecipesController extends Controller
 {
@@ -65,11 +67,26 @@ class RecipesController extends Controller
         } else {
             $recipes = Recipe::withCount('likes')
                 ->with(['images' => function ($query) {
-                    $query->take(1);
-                }])
-                ->get();
+                    $query->select('recipe_id', 'image_url');
+                }, 'cuisine'])
+                ->get()
+                ->map(function ($recipe) {
+                    return [
+                        "id" => $recipe->id,
+                        "cuisine" => $recipe->cuisine->name,
+                        "title" => $recipe->title,
+                        "description" => $recipe->description,
+                        "likes_count" => $recipe->likes_count,
+                        "images" => $recipe->images->map(function ($image) {
+                            return [
+                                "image_url" => $image->image_url,
+                            ];
+                        }),
+                    ];
+                });
 
             return response()->json($recipes);
         }
     }
+    
 }
