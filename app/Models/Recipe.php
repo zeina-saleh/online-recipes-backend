@@ -13,6 +13,7 @@ use App\Models\RecipeImage;
 use App\Models\Cuisine;
 use App\Models\Ingredient;
 use App\Models\IngredientRecipe;
+use App\Models\Plan;
 
 class Recipe extends Model
 {
@@ -50,10 +51,14 @@ class Recipe extends Model
     }*/
 
     public function ingredients()
-{
-    return $this->belongsToMany(Ingredient::class)
-        ->using(IngredientRecipe::class)
-        ->withPivot('quantity');
-        
-}
+    {
+        return $this->belongsToMany(Ingredient::class)
+            ->using(IngredientRecipe::class)
+            ->withPivot('quantity');
+    }
+    
+    public function plans(): HasMany
+    {
+        return $this->hasMany(Plan::class);
+    }
 }
