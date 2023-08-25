@@ -15,6 +15,7 @@ class Ingredient extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'unit_id'
     ];
 
     /*public function recipe(): BelongsToMany
